@@ -1,0 +1,41 @@
+services:
+  contact-db:
+    container_name: contact-db
+    image: mysql:8.0
+    networks:
+      - contact-network
+    environment:
+      - MYSQL_USER=amina
+      - MYSQL_PASSWORD=passer
+      - MYSQL_DATABASE=contacts
+      - MYSQL_ROOT_PASSWORD=secret
+    volumes:
+      - dbvol:/var/lib/mysql
+    ports:
+      - "3306:3306"
+
+
+  contact-app:
+    build:
+      context: .
+    container_name: appcontact-docker
+    image: contact:latest
+    ports:
+      - "8080:8080"
+    networks:
+      - contact-network
+    depends_on:
+      - contact-db
+    environment:
+      - MYSQL_HOST=contact-db
+      - MYSQL_USERNAME=amina
+      - MYSQL_PASSWORD=passer
+      - MYSQL_DATABASE=contacts
+      - MYSQL_PORT=3306
+    restart: always
+networks:
+  contact-network:
+    name: contact-network
+
+volumes:
+  dbvol:
